@@ -1,0 +1,44 @@
+# This workflow will upload a Python Package using Twine when a release is created
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#publishing-to-package-registries
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Build TWS with V
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up V
+      run: |
+        git clone https://github.com/vlang/v
+        cd v && make
+        ./v symlink 
+        cd ..
+        v --version
+    - name: Build tws & create sha
+      run: |
+        git clone https://github.com/davlgd/tws
+        v -prod .
+        sha256sum tws > tws.sha256
+        sha512sum tws > tws.sha512
+    - name: Publish tws build
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          tws
+          tws.sha256
+          tws.sha512

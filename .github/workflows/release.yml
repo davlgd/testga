@@ -33,7 +33,7 @@ jobs:
     - name: Build tws & create sha
       run: |
         git clone https://github.com/davlgd/tws
-        v -prod .
+        cd tws && v -prod .
         sha256sum tws > tws.sha256
         sha512sum tws > tws.sha512
     - name: Publish tws build
